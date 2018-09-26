@@ -9,7 +9,7 @@ const init = str => str.split(" ").map(x => +x || 0);
 const getMid = (left, right) => Math.floor((left + right) / 2);
 
 /**
- * 思路：高原数组、折半查找，二分法思想
+ * 思路：前i项求和，排序找最接近的
  */
 const calc = str => {
   const array = init(str);
