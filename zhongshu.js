@@ -29,6 +29,7 @@ const calc = str => {
   return m;
 };
 
+// 计算出现次数超过 N/2 的绝对众数
 rl.on("line", input => {
   console.log(calc(input.trim()));
 });
