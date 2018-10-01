@@ -12,17 +12,14 @@ const init = str => str.split(" ").map(x => x | 0);
  */
 const calc = str => {
   const [money, chicken] = init(str);
-  let x = 0; // 鸡翁数量
-  let y = 0; // 鸡母数量
-  let z = 0; // 鸡雏数量
-  const check = () => x * 5 + y * 3 + z / 3 === money;
-  for (; x <= chicken; x += 1) {
-    for (; y <= chicken; y += 1) {
-      z = chicken - x - y;
-      if (check()) return [x, y, z];
+  const resolve = [];
+  for (let x = 0; x <= chicken; x += 1) {
+    for (let y = 0; y <= chicken - x; y += 1) {
+      const z = chicken - x - y;
+      if (x * 5 + y * 3 + z / 3 === money) resolve.push([x, y, z]);
     }
   }
-  throw Error("no resolve");
+  return resolve;
 };
 
 // 百鸡百钱问题
