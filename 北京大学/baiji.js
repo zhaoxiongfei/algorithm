@@ -19,7 +19,7 @@ const calc = str => {
       if (x * 5 + y * 3 + z / 3 === money) resolve.push([x, y, z]);
     }
   }
-  return resolve;
+  return resolve.map(x => x.join("\t")).join("\n");
 };
 
 // 百鸡百钱问题
