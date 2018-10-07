@@ -34,6 +34,7 @@
       }
     }
     resolveStr = vs.join("");
+    console.log("resolve: %s", resolveStr);
   };
 
   let initValue = ""; // 初始化值，利用0/1记录的字符串
@@ -64,24 +65,61 @@
     return matrix;
   };
 
-  const resolve = (str, rows = 6, cols = 5) => {
-    const matrix = [];
-    // TODO 未完待续
-    for (let row = 0; row < rows; row += 1) {
-      const r = [];
-      for (let col = 0; col < cols; col += 1) {
-        const v = resolveStr[row * cols + col] | 0;
-        r.push(v);
+  const check = (lights, presses) => {
+    const rows = lights.length;
+    const cols = lights[0].length;
+    for (let r = 0; r < rows; r += 1) {
+      for (let c = 0; c < cols; c += 1) {
+        if (!presses[r + 1]) presses[r + 1] = [];
+        presses[r + 1][c] =
+          (lights[r][c] +
+            presses[r][c] +
+            (presses[r - 1] ? presses[r - 1][c] | 0 : 0) +
+            (presses[r][c - 1] | 0) +
+            (presses[r][c + 1] | 0)) %
+          2;
       }
-      matrix.push(r);
     }
-    return matrix;
+
+    for (let c = 0; c < cols; c += 1) {
+      if (
+        ((presses[rows - 1][c - 1] | 0) +
+          presses[rows - 1][c] +
+          (presses[rows - 1][c + 1] | 0) +
+          presses[rows - 2][c]) %
+        2 !==
+        lights[rows - 1][c]
+      )
+        return false;
+    }
+
+    return true;
+  };
+
+  const resolve = lights => {
+    const cols = lights[0].length;
+    let maxValue = 2 ** cols;
+    while (maxValue > 0) {
+      maxValue -= 1;
+      const valueBinary = maxValue.toString(2);
+      const len = valueBinary.length;
+      const first = [];
+      first.length = cols;
+      first.fill(0);
+      for (let c = 0; c < len; c += 1)
+        first[cols - len + c] = valueBinary[c] | 0;
+      console.log("first row: %s", first.join(""));
+      const presses = [first];
+      if (check(lights, presses)) return presses;
+    }
+    throw Error("unsolvable");
   };
 
   class MyComponent extends React.Component {
     state = {
       lights: init(),
       resolves: null,
+      unsolvable: false,
       showResolve: false
     };
 
@@ -93,28 +131,53 @@
     }
 
     reset() {
-      this.setState({ lights: restore(initValue) });
+      this.setState({
+        lights: restore(initValue),
+        resolves: null,
+        showResolve: false,
+        unsolvable: false
+      });
     }
 
     restart() {
-      this.setState({ lights: init(), resolves: null });
+      this.setState({
+        lights: init(),
+        resolves: null,
+        showResolve: false,
+        unsolvable: false
+      });
     }
 
     resolve() {
-      const { showResolve } = this.state;
+      const { showResolve, lights } = this.state;
       if (showResolve === false) {
-        this.setState({ resolves: resolve(initValue), showResolve: true });
+        let resolves;
+        console.log(lights);
+        try {
+          resolves = resolve(lights);
+          console.log(resolves);
+        } catch (e) {
+          console.log("unsolvable");
+          this.setState({ unsolvable: true });
+          return;
+        }
+        this.setState({ resolves, showResolve: true, unsolvable: false });
       } else {
-        this.setState({ resolves: null, showResolve: false });
+        this.setState({
+          resolves: null,
+          showResolve: false,
+          unsolvable: false
+        });
       }
     }
 
     render() {
-      const { lights, resolves, showResolve } = this.state;
+      const { lights, resolves, showResolve, unsolvable } = this.state;
       return (
         <div>
           <h3>灭灯问题</h3>
           <Alert variant="primary">请设法关闭所有的灯</Alert>
+          {unsolvable && <Alert variant="danger">该题无解</Alert>}
           <div style={{ paddingBottom: 10, textAlign: "right" }}>
             <Button variant="primary" onClick={this.reset.bind(this)}>
               重置
