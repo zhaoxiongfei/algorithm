@@ -2,26 +2,6 @@
   const { React, ReactDOM, ReactBootstrap } = window;
   const { Alert, Table, Button } = ReactBootstrap;
 
-  // Random function , return 0 or 1;
-  const random = () => (Math.random() > 0.5 ? 1 : 0);
-
-  let initValue = ""; // 初始化值，利用0/1记录的字符串
-  const init = (rows = 6, cols = 5) => {
-    const matrix = [];
-    const values = [];
-    for (let row = 0; row < rows; row += 1) {
-      const r = [];
-      for (let col = 0; col < cols; col += 1) {
-        const v = random();
-        values.push(v);
-        r.push(v);
-      }
-      matrix.push(r);
-    }
-    initValue = values.join("");
-    return matrix;
-  };
-
   const turn = (lights, r, c) => {
     const row = lights[r];
     if (row === undefined) return;
@@ -32,6 +12,43 @@
     } else if (current === 0) {
       lights[r][c] = 1;
     }
+  };
+
+  const press = (lights, row, col) => {
+    turn(lights, row, col); // self
+    turn(lights, row, col - 1); // left
+    turn(lights, row, col + 1); // right
+    turn(lights, row - 1, col); // up
+    turn(lights, row + 1, col); // down
+  };
+
+  // Random press light
+  let resolveStr = "";
+  const random = (lights, rows, cols) => {
+    const vs = [];
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        const status = Math.random() > 0.5 ? 1 : 0;
+        vs.push(status);
+        if (status === 1) press(lights, row, col);
+      }
+    }
+    resolveStr = vs.join("");
+  };
+
+  let initValue = ""; // 初始化值，利用0/1记录的字符串
+  const init = (rows = 6, cols = 5) => {
+    const matrix = [];
+    for (let row = 0; row < rows; row += 1) {
+      const r = [];
+      for (let col = 0; col < cols; col += 1) {
+        r.push(0);
+      }
+      matrix.push(r);
+    }
+    random(matrix, rows, cols);
+    initValue = matrix.map(x => x.join("")).join("");
+    return matrix;
   };
 
   const restore = (str, rows = 6, cols = 5) => {
@@ -53,7 +70,7 @@
     for (let row = 0; row < rows; row += 1) {
       const r = [];
       for (let col = 0; col < cols; col += 1) {
-        const v = str[row * cols + col] | 0;
+        const v = resolveStr[row * cols + col] | 0;
         r.push(v);
       }
       matrix.push(r);
@@ -63,18 +80,16 @@
 
   class MyComponent extends React.Component {
     state = {
-      lights: init()
+      lights: init(),
+      resolves: null,
+      showResolve: false
     };
 
     turn(r, c) {
-      const { lights } = this.state;
-      turn(lights, r, c); // self
-      turn(lights, r, c - 1); // left
-      turn(lights, r, c + 1); // right
-      turn(lights, r - 1, c); // up
-      turn(lights, r + 1, c); // down
-
-      this.setState({ lights: [].concat(lights) });
+      const { lights, showResolve, resolves } = this.state;
+      press(lights, r, c);
+      if (showResolve && resolves) resolves[r][c] = 0;
+      this.setState({ lights });
     }
 
     reset() {
@@ -86,11 +101,16 @@
     }
 
     resolve() {
-      this.setState({ resolves: resolve(initValue) });
+      const { showResolve } = this.state;
+      if (showResolve === false) {
+        this.setState({ resolves: resolve(initValue), showResolve: true });
+      } else {
+        this.setState({ resolves: null, showResolve: false });
+      }
     }
 
     render() {
-      const { lights, resolves } = this.state;
+      const { lights, resolves, showResolve } = this.state;
       return (
         <div>
           <h3>灭灯问题</h3>
@@ -102,7 +122,11 @@
             <Button variant="danger" onClick={this.restart.bind(this)}>
               重新开始
             </Button>{" "}
-            <Button variant="success" onClick={this.resolve.bind(this)}>
+            <Button
+              variant="success"
+              active={showResolve}
+              onClick={this.resolve.bind(this)}
+            >
               求解
             </Button>
           </div>
@@ -116,7 +140,9 @@
                       style={{ background: col ? "yellow" : "gray" }}
                       key={cIndex}
                     >
-                      {resolves && resolves[rIndex][cIndex] ? "点击" : "　"}
+                      {showResolve && resolves && resolves[rIndex][cIndex]
+                        ? "点击"
+                        : "　　"}
                     </td>
                   ))}
                 </tr>
