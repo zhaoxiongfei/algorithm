@@ -24,16 +24,17 @@
     }
 
     settingDamaged(row, col) {
+      const { damaged } = this.state;
+      damaged.push([row, col]);
+
+      this.setState({ damaged });
+    }
+
+    removeDamaged(row, col) {
       let { damaged } = this.state;
-      const { cols } = this.state;
-      const node = nodes[row * cols + col];
-      if (node.props.fill === "green") {
-        damaged.push([row, col]);
-        node.props.fill = "black";
-      } else {
-        node.props.fill = "green";
-        damaged = damaged.filter(([r, c]) => row !== r || col !== c);
-      }
+
+      damaged = damaged.filter(([r, c]) => r !== row || c !== col);
+
       this.setState({ damaged });
     }
 
@@ -62,7 +63,7 @@
             y1={space}
             x2={x}
             y2={space + (rows - 1) * step}
-            stroke="red"
+            stroke="green"
           />
         );
       }
@@ -85,7 +86,7 @@
 
     restart() {
       this.setState({
-        damaged: {},
+        damaged: [],
         showResolve: false,
         unsolvable: false
       });
@@ -103,6 +104,17 @@
       } = this.state;
       const width = (cols - 1) * step + space * 2;
       const height = (rows - 1) * step + space * 2;
+
+      const damagedNodes = damaged.map(([r, c]) => (
+        <circle
+          onClick={this.removeDamaged.bind(this, r, c)}
+          cx={space + c * step}
+          cy={space + r * step}
+          r={1 + step / 4}
+          fill="black"
+        />
+      ));
+
       return (
         <div>
           <h3>讨厌的青蛙</h3>
@@ -147,24 +159,25 @@
               </Badge>{" "}
               个
             </Alert>
-
-            <svg
-              width={width}
-              height={height}
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{
-                background: "#f6f6f6",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                overflow: "auto"
-              }}
-            >
-              {rowLines}
-              {colLines}
-              {nodes}
-            </svg>
           </div>
+
+          <svg
+            width={width}
+            height={height}
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              background: "#f6f6f6",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              overflow: "auto"
+            }}
+          >
+            {rowLines}
+            {colLines}
+            {nodes}
+            {damagedNodes}
+          </svg>
         </div>
       );
     }
