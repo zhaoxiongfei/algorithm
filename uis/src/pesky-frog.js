@@ -23,7 +23,7 @@
 
     let resolves;
     let maxStep = 2;
-    for (let i = 0; i < length; i += 1) {
+    for (let i = 0; i < length - 1; i += 1) {
       for (let j = i + 1; j < length; j += 1) {
         const first = damaged[i];
         const second = damaged[j];
@@ -37,41 +37,46 @@
         // 1. 判断第一个点的上一个趋势点是否在田内, 如果在田内说明第二个点不对，跳过检测下一个第二点
         if (px >= 0 && py < rows && py >= 0) continue;
 
-        const mx = px + maxStep * dx; // 按照目前最大路径后的点x坐标
-        const my = py + maxStep * dy; // 按照目前最大路径后的点y坐标
-        // 2. 判断第二个点经过当前最大路径后是否已经在田外，如果在田外说明第一个点不对
-        if (mx > cols || my > rows || my < 0) break;
+        const mx = x1 + maxStep * dx; // 按照目前最大路径后的点x坐标
+        const my = y1 + maxStep * dy; // 按照目前最大路径后的点y坐标
+        // 2. 判断第一个点经过当前最大路径后是否已经在田外，如果在田外说明第二个点不对
+        if (mx > cols) break;
+        if (my > rows || my < 0) continue;
 
-        resolves = [first, second];
+        const paths = [first, second];
         // 3. 按照趋势逐步判断第三、第四、第五....点
         let x = x2 + dx;
         let y = y2 + dy;
         while (dict[y] && dict[y][x]) {
-          resolves.push([y, x]);
+          paths.push([y, x]);
           x += dx;
           y += dy;
         }
-        const lx = x + dx; // 最后一个点的下一个点x坐标
-        const ly = y + dy; // 最后一个点的下一个点y坐标
         // 如果最后一个点的下一个点在田内，则路径不合法, 第二点重新选择
-        if (lx < cols && ly < rows && ly >= 0) continue;
+        if (x < cols && y < rows && y >= 0) continue;
 
-        if (resolves.length > maxStep) maxStep = resolves.length;
+        if (paths.length > maxStep) {
+          resolves = paths;
+          maxStep = resolves.length;
+        }
       }
-
-      if (maxStep === 2) throw Error("unsolvable");
-      return resolves;
     }
 
+    if (maxStep === 2) throw Error("unsolvable");
     return resolves;
+  };
+
+  const tmp = {};
+  const settingTemp = (key, e) => {
+    tmp[key] = e.currentTarget.value;
   };
 
   class MyComponent extends React.Component {
     state = {
       space: 40, // 画布边缘留白大小
       step: 60, // 水稻间距
-      rows: 6,
-      cols: 7,
+      rows: 10,
+      cols: 10,
       damaged: [],
       resolves: [],
       unsolvable: false,
@@ -81,7 +86,7 @@
     constructor() {
       super();
 
-      this.init();
+      this.init(this.state);
     }
 
     settingDamaged(row, col) {
@@ -91,6 +96,17 @@
       this.setState({ damaged });
     }
 
+    activeRowsCols = () => {
+      const rows = Math.min(100, Math.max(5, tmp.rows | 0));
+      const cols = Math.min(100, Math.max(5, tmp.cols | 0));
+      this.init({ rows, cols });
+
+      this.setState({
+        rows,
+        cols
+      });
+    };
+
     removeDamaged(row, col) {
       let { damaged } = this.state;
 
@@ -99,8 +115,8 @@
       this.setState({ damaged });
     }
 
-    init() {
-      const { rows, cols, space, step } = this.state;
+    init({ rows, cols }) {
+      const { space, step } = this.state;
       rowLines = [];
       for (let r = 0; r < rows; r += 1) {
         const y = space + r * step;
@@ -146,7 +162,10 @@
     }
 
     resolve() {
-      const { damaged, rows, cols } = this.state;
+      const { damaged, rows, cols, showResolve } = this.state;
+
+      if (showResolve)
+        return this.setState({ showResolve: false, resolves: [] });
 
       let resolves;
       try {
@@ -209,15 +228,22 @@
                   defaultValue={rows}
                   placeholder="行数"
                   aria-label="行数设置"
+                  onChange={settingTemp.bind(null, "rows")}
                 />
                 <FormControl
                   placeholder="列数"
                   defaultValue={cols}
                   aria-label="列数设置"
+                  onChange={settingTemp.bind(null, "cols")}
                   aria-describedby="basic-addon2"
                 />
                 <InputGroup.Append>
-                  <Button variant="outline-primary">设置</Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={this.activeRowsCols}
+                  >
+                    设置
+                  </Button>
                 </InputGroup.Append>
               </InputGroup>
             </div>
