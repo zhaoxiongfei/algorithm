@@ -6,6 +6,66 @@
   let colLines;
   let nodes;
 
+  const resolve = (damaged, rows, cols) => {
+    const { length } = damaged;
+    damaged.sort(([y1, x1], [y2, x2]) => {
+      if (x1 > x2) return 1;
+      if (x1 < x2) return -1;
+      if (y1 > y2) return 1;
+      return -1;
+    });
+
+    const dict = {};
+    damaged.forEach(([r, c]) => {
+      if (!dict[r]) dict[r] = {};
+      dict[r][c] = true;
+    });
+
+    let resolves;
+    let maxStep = 2;
+    for (let i = 0; i < length; i += 1) {
+      for (let j = i + 1; j < length; j += 1) {
+        const first = damaged[i];
+        const second = damaged[j];
+        const [y1, x1] = first;
+        const [y2, x2] = second;
+        const dx = x2 - x1; // 计算横轴偏移量
+        const dy = y2 - y1; // 计算纵轴偏移量
+
+        const px = x1 - dx; // 第一个点的上一个点x坐标
+        const py = y1 - dy; // 第一个点的上一个点y坐标
+        // 1. 判断第一个点的上一个趋势点是否在田内, 如果在田内说明第二个点不对，跳过检测下一个第二点
+        if (px >= 0 && py < rows && py >= 0) continue;
+
+        const mx = px + maxStep * dx; // 按照目前最大路径后的点x坐标
+        const my = py + maxStep * dy; // 按照目前最大路径后的点y坐标
+        // 2. 判断第二个点经过当前最大路径后是否已经在田外，如果在田外说明第一个点不对
+        if (mx > cols || my > rows || my < 0) break;
+
+        resolves = [first, second];
+        // 3. 按照趋势逐步判断第三、第四、第五....点
+        let x = x2 + dx;
+        let y = y2 + dy;
+        while (dict[y] && dict[y][x]) {
+          resolves.push([y, x]);
+          x += dx;
+          y += dy;
+        }
+        const lx = x + dx; // 最后一个点的下一个点x坐标
+        const ly = y + dy; // 最后一个点的下一个点y坐标
+        // 如果最后一个点的下一个点在田内，则路径不合法, 第二点重新选择
+        if (lx < cols && ly < rows && ly >= 0) continue;
+
+        if (resolves.length > maxStep) maxStep = resolves.length;
+      }
+
+      if (maxStep === 2) throw Error("unsolvable");
+      return resolves;
+    }
+
+    return resolves;
+  };
+
   class MyComponent extends React.Component {
     state = {
       space: 40, // 画布边缘留白大小
@@ -13,6 +73,7 @@
       rows: 6,
       cols: 7,
       damaged: [],
+      resolves: [],
       unsolvable: false,
       showResolve: false
     };
@@ -84,9 +145,27 @@
       }
     }
 
+    resolve() {
+      const { damaged, rows, cols } = this.state;
+
+      let resolves;
+      try {
+        resolves = resolve(damaged, rows, cols);
+      } catch (e) {
+        console.error(e);
+        return this.setState({
+          showResolve: false,
+          resolves: [],
+          unsolvable: true
+        });
+      }
+      return this.setState({ showResolve: true, resolves });
+    }
+
     restart() {
       this.setState({
         damaged: [],
+        resolves: [],
         showResolve: false,
         unsolvable: false
       });
@@ -99,6 +178,7 @@
         rows,
         cols,
         damaged,
+        resolves,
         showResolve,
         unsolvable
       } = this.state;
@@ -119,7 +199,6 @@
         <div>
           <h3>讨厌的青蛙</h3>
           <Alert variant="primary">点击网格交点设置一些损坏点</Alert>
-          {unsolvable && <Alert variant="danger">该题无解</Alert>}
           <div style={{ paddingBottom: 10 }}>
             <div style={{ float: "left", width: 500 }}>
               <InputGroup className="mb-3">
@@ -146,7 +225,11 @@
               <Button variant="danger" onClick={this.restart.bind(this)}>
                 重新开始
               </Button>{" "}
-              <Button variant="success" active={showResolve}>
+              <Button
+                variant="success"
+                onClick={this.resolve.bind(this)}
+                active={showResolve}
+              >
                 求解
               </Button>
             </div>
@@ -159,6 +242,7 @@
               </Badge>{" "}
               个
             </Alert>
+            {unsolvable && <Alert variant="danger">该题无解</Alert>}
           </div>
 
           <svg
@@ -177,6 +261,17 @@
             {colLines}
             {nodes}
             {damagedNodes}
+            {showResolve &&
+              resolves.map(([r, c]) => (
+                <circle
+                  cx={space + c * step}
+                  cy={space + r * step}
+                  r={step / 4}
+                  stroke="yellow"
+                  strokeWidth="3"
+                  fill="none"
+                />
+              ))}
           </svg>
         </div>
       );
