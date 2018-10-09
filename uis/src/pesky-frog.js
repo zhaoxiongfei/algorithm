@@ -289,14 +289,24 @@
             {damagedNodes}
             {showResolve &&
               resolves.map(([r, c]) => (
-                <circle
-                  cx={space + c * step}
-                  cy={space + r * step}
-                  r={step / 4}
-                  stroke="yellow"
-                  strokeWidth="3"
-                  fill="none"
-                />
+                <g>
+                  <circle
+                    cx={space + c * step}
+                    cy={space + r * step}
+                    r={step / 4}
+                    stroke="yellow"
+                    strokeWidth="3"
+                    fill="none"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    begin="0s"
+                    dur="1s"
+                    from="1"
+                    to="0"
+                    repeatCount="indefinite"
+                  />
+                </g>
               ))}
           </svg>
         </div>
