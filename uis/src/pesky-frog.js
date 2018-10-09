@@ -295,15 +295,14 @@
                     cy={space + r * step}
                     r={step / 4}
                     stroke="yellow"
-                    strokeWidth="3"
+                    strokeWidth="5"
                     fill="none"
                   />
                   <animate
                     attributeName="opacity"
                     begin="0s"
-                    dur="1s"
-                    from="1"
-                    to="0"
+                    dur="2s"
+                    values="1;0.3;1"
                     repeatCount="indefinite"
                   />
                 </g>
