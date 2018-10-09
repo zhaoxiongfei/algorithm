@@ -4,7 +4,7 @@ const rl = readline.createInterface({
   input: process.stdin
 });
 
-const init = str => Math.min(10, Math.max(1, str | 0));
+const init = str => Math.min(20, Math.max(1, str | 0));
 
 const hanoi = (n, src, mid, dest) => {
   if (n === 1) {
