@@ -25,5 +25,5 @@ const calc = str => {
 // 汉诺塔问题, 给出具体的走法
 // 输入：盘子的数量 n 满足 (1 <= n <= 10)
 rl.on("line", input => {
-  console.log(calc(input.trim()));
+  calc(input.trim());
 });
