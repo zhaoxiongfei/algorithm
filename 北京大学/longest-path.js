@@ -9,8 +9,9 @@ const init = str => str.split(" ").map(x => x | 0);
 const update = (matrix, x, y, longest, height) => {
   if (matrix[y] == null) return;
   if (matrix[y][x] == null) return;
-  if (matrix[y][x].height <= height) return;
-  matrix[y][x].longest = longest + 1;
+  const item = matrix[y][x];
+  if (item.height <= height) return;
+  if ((item.longest | 0) < longest + 1) matrix[y][x].longest = longest + 1;
 };
 
 const updateLongest = (matrix, sorted, idx) => {
