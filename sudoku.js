@@ -57,57 +57,39 @@ const setOptions = (index, list, shadow) => {
   // 等于 0 的格子无法给别人做任何贡献，先忽略
   if (value === 0) return;
 
+  // 有确切的值，则 without 会除该值外的其他值
+  const item = shadow[index];
+  item.without = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  item.without.delete(value);
+
   // 获取同行，同列，同宫的其他索引值，挨个删除当前值
   getOthers(index).forEach(i => {
-    const { options } = shadow[i];
+    const { options, without } = shadow[i];
     if (options.size === 1) return; // 无须删除
     options.delete(value);
+    without.add(value); // 其他的格子排除项里加该值
     // 如果剔除后长度为 1, 即确定了答案，则递归设置
     if (options.size === 1) {
       list[i] = options.values().next().value;
       setOptions(i, list, shadow);
     }
   });
-
-  // 把同行的可选项删除当前值
-  getOthers.byRow(index).forEach(i => {
-    const { withoutByRow } = shadow[i];
-    withoutByRow.delete(value);
-  });
-
-  // 把同行的可选项删除当前值
-  getOthers.byCol(index).forEach(i => {
-    const { withoutByCol } = shadow[i];
-    withoutByCol.delete(value);
-  });
-
-  // 把同宫的可选项删除当前值
-  getOthers.byPalace(index).forEach(i => {
-    const { withoutByPalace } = shadow[i];
-    withoutByPalace.delete(value);
-  });
-};
-
-const getOnlyNotFound = (src, dest) => {
-  const notFound = [];
-  src.forEach(x => {
-    if (!dest.has(x)) notFound.push(x);
-  });
-
-  if (notFound.length === 1) return notFound[0];
-  return false;
 };
 
 const setRequired = (i, list, shadow) => {
-  const { options } = shadow[i];
+  const item = shadow[i];
+  const { options } = item;
   if (options.size === 1) return;
+
   const keys = ["Row", "Col", "Palace"];
   for (let k = 0; k < 3; k += 1) {
     const key = keys[k];
-    const exists = getOnlyNotFound(options, shadow[i][`withoutBy${key}`]);
-    if (exists) {
-      list[i] = exists;
-      console.log("fuck you");
+    const others = Array.from(getOthers[`by${key}`](i));
+    const one = Array.from(options).find(v =>
+      others.every(x => shadow[x].without.has(v))
+    );
+    if (one) {
+      list[i] = one;
       setOptions(i, list, shadow);
       break;
     }
@@ -118,7 +100,9 @@ const startup = (list, shadow) => {
   list.forEach((x, i) => {
     // 设置可能的选项
     setOptions(i, list, shadow);
+  });
 
+  list.forEach((x, i) => {
     // 设置当前格子同行、同列、同宮的其他格子的可能选项
     // 以此可以确定是否当前选项里有仅有某个唯一的选择
     // 原理: 当前格子可选集合 ∪ 同行/同列/同宮 其他格子可选集合等于全集 {1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -132,10 +116,8 @@ const calc = list => {
   const shadow = [];
   for (let i = 0; i < 81; i += 1) {
     shadow[i] = {
-      // 利用这批 without 开头的可以缩小 options, 如果某个 option 在这里不存在，那么该 option 就是当前格子的正解
-      withoutByRow: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]), // 同行其他格子可选值
-      withoutByCol: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]), // 同列其他格子可选值
-      withoutByPalace: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]), // 同宫其他格子可选值
+      // 利用 without 可以缩小 options, 如果某个 option 在这里不存在，那么该 option 就是当前格子的正解
+      without: new Set([]), // 一定不出现的
       options: new Set(list[i] ? [list[i]] : [1, 2, 3, 4, 5, 6, 7, 8, 9]) // 可选择
     };
   }
@@ -146,7 +128,7 @@ const calc = list => {
     console.log(
       shadow
         .slice(start, end)
-        .map(x => Array.from(x.withoutByPalace).join("."))
+        .map(x => Array.from(x.options).join("."))
         .join("\t\t")
     );
     return list.slice(start, end);
