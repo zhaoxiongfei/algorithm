@@ -127,8 +127,6 @@ const setRequired = (i, list, shadow) => {
   }
 };
 
-const tryStack = []; // 尝试的栈
-
 const startup = list => {
   const shadow = [];
   for (let i = 0; i < 81; i += 1) {
@@ -156,6 +154,7 @@ const startup = list => {
   // 检查是否还有零值
   if (list.find(x => !x) === undefined) return list;
 
+  const tryStack = []; // 尝试的栈
   // 尝试栈为空则找到选择最少的不确定项压栈
   if (tryStack.length === 0) {
     const unknow = [];
@@ -171,16 +170,20 @@ const startup = list => {
       tryStack.push(fork);
     });
   }
-  const fork = tryStack.pop();
 
-  // output(list);
-  output(list);
-  output(shadow, true);
-  // process.exit();
-  try {
-    return startup(fork);
-  } catch (e) {
-    return startup(list);
+  let fork;
+  while ((fork = tryStack.pop())) {
+    // output(list);
+    output(list);
+    output(shadow, true);
+    // process.exit();
+    try {
+      return startup(fork);
+    } catch (e) {
+      if (tryStack.length === 0) {
+        throw Error("冲突了，需要回溯");
+      }
+    }
   }
 };
 
