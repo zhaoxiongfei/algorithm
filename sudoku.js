@@ -148,9 +148,6 @@ const startup = list => {
     setRequired(i, list, shadow);
   });
 
-  output(list);
-  output(shadow, true);
-
   // 检查是否还有零值
   if (list.find(x => !x) === undefined) return list;
 
@@ -173,10 +170,6 @@ const startup = list => {
 
   let fork;
   while ((fork = tryStack.pop())) {
-    // output(list);
-    output(list);
-    output(shadow, true);
-    // process.exit();
     try {
       return startup(fork);
     } catch (e) {
