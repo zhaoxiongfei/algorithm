@@ -3034,6 +3034,7 @@ const threeSum = nums => {
   const resolves = [];
   let left = 0;
   let right = length - 1;
+  let lastRight = right;
   while (left < right - 1) {
     const first = nums[left];
     const third = nums[right];
@@ -3064,6 +3065,7 @@ const threeSum = nums => {
 
     // 第三个数的下一个继续检测
     right -= dictDup[third];
+    lastRight = right;
     if (left >= right - 1) {
       left += dictDup[first];
       right = length - 1;
