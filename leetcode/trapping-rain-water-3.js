@@ -11,18 +11,24 @@ const trap = nums => {
   let res = 0;
   let mx = 0;
   const dp = [];
+  // 从前向后扫描nums
+  // 这里dp里内容为对应位置的左侧可能取值的最大值
+  // eg [4, 2, 3] => [0, 4, 4];
   for (let i = 0; i < length; i += 1) {
     dp[i] = mx;
     mx = Math.max(mx, nums[i]);
   }
-  console.log(dp);
-  mx = 0;
+
+  mx = 0; // 重置最大值为零
+  // 从后向前扫描元素
+  // dp 里记录的是对应位置左侧最大或者右侧最大里的较小的值
+  // 这样当前元素的值如果比这个数字小，则可以收集雨水，数量为 db[i[ - nums[i];
+  // eg [4, 2, 3] => [0, 4, 4] => [0, 3, 0]
   for (let i = length - 1; i >= 0; i -= 1) {
     dp[i] = Math.min(dp[i], mx);
     mx = Math.max(mx, nums[i]);
     if (dp[i] > nums[i]) res += dp[i] - nums[i];
   }
-  console.log(dp);
   return res;
 };
 
