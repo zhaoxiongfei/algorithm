@@ -1,4 +1,4 @@
-// https://leetcode-cn.com/problems/combination-sum/description/
+// https://leetcode-cn.com/problems/combination-sum-ii/description/
 
 const resolve = (candidates, start, target, solution, solutions) => {
   if (target < 0) return;
@@ -9,7 +9,7 @@ const resolve = (candidates, start, target, solution, solutions) => {
 
   for (let i = start; i < candidates.length; i += 1) {
     solution.push(candidates[i]);
-    resolve(candidates, i, target - candidates[i], solution, solutions);
+    resolve(candidates, i + 1, target - candidates[i], solution, solutions);
     solution.pop();
   }
 };
