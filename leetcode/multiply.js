@@ -10,41 +10,23 @@ const multiply = (num1, num2) => {
   const len2 = num2.length;
 
   // 存放最终结果，预先申请好空间
-  const res = [];
-  res.length = len1 + len2;
-  res.fill(0);
+  const res = Array(len1 + len2).fill(0);
 
   // 循环乘数
   for (let i = len2 - 1; i >= 0; i -= 1) {
     const n2 = num2[i];
     // 循环被乘数
     for (let j = len1 - 1; j >= 0; j -= 1) {
-      const pos = i + 1 + (j + 1) - 1;
+      const pos = i + j + 1;
       const n1 = num1[j];
-      const product = n1 * n2;
-      let high = (product / 10) | 0;
+      const product = n1 * n2 + res[pos];
+      const high = (product / 10) | 0;
       const low = product % 10;
-      if (low) {
-        res[pos] += low;
-        if (res[pos] > 9) {
-          res[pos] -= 10;
-          high += 1;
-        }
-      }
-      if (high) {
-        let p = pos - 1;
-        res[p] += high;
-        while (p >= 0) {
-          if (res[p] < 10) break;
-          res[p] -= 10;
-          res[p - 1] += 1;
-          p -= 1;
-        }
-      }
+      res[pos] = low;
+      res[pos - 1] += high;
     }
   }
 
-  console.log(res);
   return res.join("").replace(/^0+/, "");
 };
 
