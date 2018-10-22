@@ -36,3 +36,4 @@ const isMatch = (s, p) => {
 };
 
 console.log(isMatch("adceb", "a*c?b"));
+console.log(isMatch("adceb".repeat(1000), "a*c?b".repeat(1000)));
