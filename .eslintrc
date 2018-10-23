@@ -53,6 +53,7 @@
     "implicit-arrow-linebreak": 0,
     "curly": 0,
     "no-mixed-operators": 0,
+    "no-restricted-syntax": 0,
     "no-lone-blocks": 0
   },
   "globals": {
