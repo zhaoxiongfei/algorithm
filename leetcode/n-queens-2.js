@@ -36,4 +36,4 @@ const solveNQueens = n => {
   return solutions;
 };
 
-console.log(solveNQueens(11));
+console.log(solveNQueens(12));
