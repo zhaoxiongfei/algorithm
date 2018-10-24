@@ -1,5 +1,16 @@
 // https://leetcode-cn.com/problems/combinations/description/
 
+const _combineCount = (n, k) => {
+  let num1 = 1;
+  let num2 = 1;
+  for (let i = 0; i < k; i += 1) {
+    num1 *= n - i;
+    num2 *= k - i;
+  }
+
+  return num1 / num2;
+};
+
 const _combineLeft = (list, start, k) => {
   const combinations = [];
   for (let i = start; i < list.length; i += 1) {
@@ -48,7 +59,9 @@ const combine = (n, k) => {
   for (let i = 1; i <= n; i += 1) nums.push(i);
   if (k === n) return [nums];
   // return _combineLeft(nums, 0, k);
-  return _combineRight(nums, n - 1, k);
+  // return _combineRight(nums, n - 1, k);
+  return _combineCount(n, k);
 };
 
-console.log(combine(30, 15).length);
+// console.log(combine(4, 2));
+console.log(combine(100, 10));
