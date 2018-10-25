@@ -32,15 +32,19 @@ const binarySearch = (nums, target, start, end) => {
 const search = (nums, target, start = 0, end = nums.length - 1) => {
   if (start === end) {
     if (target === nums[start]) return start;
+    return -1;
   }
   if (start > end) return -1;
   if (nums[start] === target) return start;
   if (nums[end] === target) return end;
-  if (nums[start] === nums[end]) return -1;
+  if (start + 1 === end) {
+    if (nums[start] === nums[end]) return -1;
+    if (nums[start] !== target && nums[end] !== target) return -1;
+  }
 
   const middle = Math.floor((start + end) / 2);
   // 右半边
-  if (nums[middle] <= nums[end]) {
+  if (nums[middle] < nums[end]) {
     if (target < nums[end] && target >= nums[middle]) {
       return binarySearch(nums, target, middle, end);
     }
@@ -48,12 +52,25 @@ const search = (nums, target, start = 0, end = nums.length - 1) => {
   }
 
   // 左半边
-  if (target > nums[start] && target <= nums[middle]) {
-    return binarySearch(nums, target, start, middle);
+  if (nums[middle] > nums[start]) {
+    if (target > nums[start] && target <= nums[middle]) {
+      return binarySearch(nums, target, start, middle);
+    }
+    return search(nums, target, middle + 1, end);
   }
-  return search(nums, target, middle + 1, end);
+
+  // 两侧都无法确定有序，都经过 search
+  if (nums[middle] === nums[start] || nums[middle] === nums[end]) {
+    const indexInLeftHalf = search(nums, target, start, middle - 1);
+    if (indexInLeftHalf !== -1) return indexInLeftHalf;
+    return search(nums, target, middle, end);
+  }
+
+  return -1;
 };
 
+console.log(search([1, 1, 3, 1], 3));
+console.log(search([2, 5, 6, 0, 0, 1, 2], 0));
 console.log(search([8, 1, 2, 3, 4, 5, 6, 7], 6));
 console.log(search([1, 3], 2));
 console.log(search([3, 1], 0));
