@@ -71,4 +71,4 @@ const generateTrees = n => {
   return generate(nums);
 };
 
-console.log(generateTrees(3));
+console.log(generateTrees(6).length);
