@@ -4,22 +4,15 @@
  * @param {number} N
  * @return {number[]}
  */
-// 貌似找到规律: 中间的提到前面，其余部分翻转
+// 思路: 递归的思想，分左右两半，每一半都是漂亮数组, 左边内容成2 ，右边 *2 - 1
+// 同时用相同的方式扩大，不会导致 N[i] + N[j] = 2 * N[k]
+// 1 ~ N 的集合等于 2 * N ∪ 2 * N - 1
 const beautifulArray = N => {
-  const nums = [];
-  if (N % 2) {
-    const middle = Math.floor(N / 2) + 1;
-    console.log(middle);
-    nums.push(middle);
-    for (let i = middle - 1; i > 0; i -= 1) {
-      nums.push(i);
-    }
-    for (let i = N; i > middle; i -= 1) {
-      nums.push(i);
-    }
-  }
-
-  return nums;
+  if (N === 1) return [1];
+  return [].concat(
+    beautifulArray(Math.floor(N / 2)).map(x => x * 2),
+    beautifulArray(N - Math.floor(N / 2)).map(x => x * 2 - 1)
+  );
 };
 
 console.log(beautifulArray(3));
