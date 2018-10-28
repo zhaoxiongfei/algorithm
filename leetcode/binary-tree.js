@@ -13,9 +13,11 @@ const make = list => {
   const stack = [root];
   for (let i = 1; i < length; i += 2) {
     const node = stack.shift();
-    node.left = { val: list[i] };
-    stack.push(node.left);
-    if (i + 1 < length) {
+    if (list[i] !== null) {
+      node.left = { val: list[i] };
+      stack.push(node.left);
+    }
+    if (list[i + 1] !== null && i + 1 < length) {
       node.right = { val: list[i + 1] };
       stack.push(node.right);
     }
