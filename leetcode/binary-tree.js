@@ -28,4 +28,6 @@ TreeNode.make = list => {
   return root;
 };
 
+TreeNode.create = TreeNode.make;
+
 module.exports = TreeNode;
