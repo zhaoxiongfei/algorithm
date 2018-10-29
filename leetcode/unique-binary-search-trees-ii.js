@@ -3,33 +3,30 @@
 
 /**
  * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
  */
+function TreeNode(val) {
+  this.val = val;
+  this.left = null;
+  this.right = null;
+}
 
-const nil = null;
-const merge = (root, ls, rs, list) => {
+const merge = (val, ls, rs, list) => {
   if (!ls.length && !rs.length) {
-    list.push([root]);
+    list.push(new TreeNode(val));
     return;
   }
   if (!ls.length) {
     for (let i = 0; i < rs.length; i += 1) {
-      list.push([root, nil].concat(rs[i]));
+      const root = new TreeNode(val);
+      root.right = rs[i];
+      list.push(root);
     }
   }
   if (!rs.length) {
     for (let i = 0; i < ls.length; i += 1) {
-      const leftRoot = ls[i].shift();
-      const line = [root, leftRoot];
-      if (ls[i].length) {
-        line.push(nil);
-        list.push(line.concat(ls[i]));
-      } else {
-        list.push(line);
-      }
+      const root = new TreeNode(val);
+      root.left = ls[i];
+      list.push(root);
     }
   }
   if (ls.length && rs.length) {
@@ -37,9 +34,10 @@ const merge = (root, ls, rs, list) => {
       const left = ls[i];
       for (let j = 0; j < rs.length; j += 1) {
         const right = rs[j];
-        list.push(
-          [root, left[0], right[0]].concat(left.slice(1), right.slice(1))
-        );
+        const root = new TreeNode(val);
+        root.left = left;
+        root.right = right;
+        list.push(root);
       }
     }
   }
@@ -47,13 +45,13 @@ const merge = (root, ls, rs, list) => {
 
 const generate = nums => {
   const { length } = nums;
+  if (!length) return [];
 
   const list = [];
   for (let i = 0; i < length; i += 1) {
-    const root = nums[i]; // 根节点先压入
     const ls = generate(nums.slice(0, i));
     const rs = generate(nums.slice(i + 1));
-    merge(root, ls, rs, list);
+    merge(nums[i], ls, rs, list);
   }
 
   return list;
@@ -71,4 +69,4 @@ const generateTrees = n => {
   return generate(nums);
 };
 
-console.log(generateTrees(6).length);
+console.log(JSON.stringify(generateTrees(3), null, 2));
