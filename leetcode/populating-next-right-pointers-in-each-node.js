@@ -51,20 +51,19 @@ const connect = root => {
   let stack1 = [root];
   let stack2 = [];
   while (stack1.length) {
-    const node = stack1.pop();
-    if (!node) continue;
-    const next = stack1[stack1.length - 1] || null;
+    const node = stack1.shift();
+    const next = stack1[0] || null;
     node.next = next;
 
+    if (node.left) stack2.push(node.left);
+    if (node.right) stack2.push(node.right);
     if (stack1.length === 0) {
       stack1 = stack2;
       stack2 = [];
     }
-    stack1.push(node.right);
-    stack1.push(node.left);
   }
 };
 
 const tree = TreeNode.create([1, 2, 3, 4, 5, 6, 7]);
 connect(tree);
-console.log(tree.next);
+console.log(JSON.stringify(tree, null, 2));
