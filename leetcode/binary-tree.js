@@ -1,24 +1,26 @@
 /**
  * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
  */
+function TreeNode(val) {
+  this.val = val;
+  this.left = null;
+  this.right = null;
+}
+
 // 根据前序遍历序列，返回二叉树
-const make = list => {
+TreeNode.make = list => {
   const { length } = list;
   if (length === 0) return null;
-  const root = { val: list[0] };
+  const root = new TreeNode(list[0]);
   const stack = [root];
   for (let i = 1; i < length; i += 2) {
     const node = stack.shift();
     if (list[i] !== null) {
-      node.left = { val: list[i] };
+      node.left = new TreeNode(list[i]);
       stack.push(node.left);
     }
     if (list[i + 1] !== null && i + 1 < length) {
-      node.right = { val: list[i + 1] };
+      node.right = new TreeNode(list[i + 1]);
       stack.push(node.right);
     }
   }
@@ -26,4 +28,4 @@ const make = list => {
   return root;
 };
 
-module.exports = { make };
+module.exports = TreeNode;
