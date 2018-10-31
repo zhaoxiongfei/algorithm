@@ -37,39 +37,43 @@
   解释: endWord "cog" 不在字典中，所以不存在符合要求的转换序列。
 */
 
-const makeDict = wordList => {
+const getOneDiffFn = wordList => {
   const dict = {};
-  for (let w = 0; w < wordList.length; w += 1) {
-    const root = wordList[w];
-    dict[root] = wordList.filter(x => {
-      if (x === root) return false;
-      let diff = 0;
-      for (let i = 0; i < x.length; i += 1) {
-        if (x[i] !== root[i]) {
-          diff += 1;
-          if (diff > 1) return false;
-        }
-      }
-      return diff === 1;
-    });
-  }
 
-  return dict;
+  return root => {
+    if (!dict[root]) {
+      dict[root] = wordList.filter(x => {
+        if (x === root) return false;
+        let diff = 0;
+        for (let i = 0; i < x.length; i += 1) {
+          if (x[i] !== root[i]) {
+            diff += 1;
+            if (diff > 1) return false;
+          }
+        }
+        return diff === 1;
+      });
+    }
+    return dict[root];
+  };
 };
 
-const searchPaths = (beginWord, endWord, dict) => {
+const searchPaths = (beginWord, endWord, getOneDiff, rpaths) => {
   const paths = [new Set([endWord])];
   const exists = new Set([endWord]);
-  while (paths.length < 10000) {
+  while (paths.length) {
     const preWords = new Set();
-    Array.from(paths[paths.length - 1]).forEach(x => {
-      for (let i = 0; i < dict[x].length; i += 1) {
-        const w = dict[x][i];
+    for (const x of paths[paths.length - 1]) {
+      const words = getOneDiff(x);
+      for (let i = 0; i < words.length; i += 1) {
+        const w = words[i];
+        if (rpaths && !rpaths[rpaths.length - 1 - paths.length].has(w))
+          continue;
         if (exists.has(w)) continue;
         preWords.add(w);
         exists.add(w);
       }
-    });
+    }
     if (preWords.size === 0) break;
     paths.push(preWords);
     if (preWords.has(beginWord)) break;
@@ -79,16 +83,7 @@ const searchPaths = (beginWord, endWord, dict) => {
   return paths;
 };
 
-// 正向路径集合和反向路径集合相交
-const intersection = (paths, rpaths) => {
-  for (let i = 1; i < paths.length; i += 1) {
-    Array.from(paths[i]).forEach(x => {
-      if (!rpaths[paths.length - i - 1].has(x)) paths[i].delete(x);
-    });
-  }
-};
-
-const getSolutions = (paths, dict) => {
+const getSolutions = (paths, getOneDiff) => {
   if (paths.length === 0) return [];
   const solutions = [[]];
   for (let i = 0; i < paths.length; i += 1) {
@@ -98,7 +93,7 @@ const getSolutions = (paths, dict) => {
     } else {
       solutions.forEach(x => {
         const last = x[x.length - 1];
-        const opts = path.filter(w => dict[last].includes(w));
+        const opts = path.filter(w => getOneDiff(last).includes(w));
         const op = opts.pop();
         while (opts.length) {
           const w = opts.pop();
@@ -128,19 +123,18 @@ const getSolutions = (paths, dict) => {
 const findLadders = (beginWord, endWord, wordList) => {
   const solutions = [];
   if (wordList.indexOf(endWord) === -1) return solutions;
+  wordList.push(beginWord);
 
-  const dict = makeDict(wordList.concat(beginWord)); // 生成一个字典，[word] => []  // 词对应的变化一个字符的单词列表
+  const getOneDiff = getOneDiffFn(wordList); // 生成一个字典，[word] => []  // 词对应的变化一个字符的单词列表
 
-  const paths = searchPaths(endWord, beginWord, dict);
-  const rpaths = searchPaths(beginWord, endWord, dict);
+  const rpaths = searchPaths(beginWord, endWord, getOneDiff);
+  const paths = searchPaths(endWord, beginWord, getOneDiff, rpaths);
 
-  intersection(paths, rpaths);
-  return getSolutions(paths, dict);
+  return getSolutions(paths, getOneDiff);
 };
 
-console.log(findLadders("hot", "dog", ["hot", "dog"]));
-console.log(findLadders("hot", "dog", ["hot", "dog", "dot"]));
-/*
+// console.log(findLadders("hot", "dog", ["hot", "dog", "dot"]));
+// console.log(findLadders("hot", "dog", ["hot", "dog"]));
 console.log(
   findLadders("nanny", "aloud", [
     "ricky",
@@ -4712,4 +4706,3 @@ console.log(
   // findLadders("a", "c", ["a", "b", "c"])
   // findLadders("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"])
 );
-*/

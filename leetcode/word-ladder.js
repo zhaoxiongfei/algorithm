@@ -37,39 +37,33 @@
   解释: endWord "cog" 不在字典中，所以不存在符合要求的转换序列。
 */
 
-const makeDict = wordList => {
-  const dict = {};
-  for (let w = 0; w < wordList.length; w += 1) {
-    const root = wordList[w];
-    dict[root] = wordList.filter(x => {
-      if (x === root) return false;
-      let diff = 0;
-      for (let i = 0; i < x.length; i += 1) {
-        if (x[i] !== root[i]) {
-          diff += 1;
-          if (diff > 1) return false;
-        }
+const getOneDiff = (root, wordList) =>
+  wordList.filter(x => {
+    if (x === root) return false;
+    let diff = 0;
+    for (let i = 0; i < x.length; i += 1) {
+      if (x[i] !== root[i]) {
+        diff += 1;
+        if (diff > 1) break;
       }
-      return diff === 1;
-    });
-  }
+    }
+    return diff === 1;
+  });
 
-  return dict;
-};
-
-const searchPaths = (beginWord, endWord, dict) => {
+const searchPaths = (beginWord, endWord, wordList) => {
   const paths = [new Set([endWord])];
   const exists = new Set([endWord]);
   while (paths.length < 10000) {
     const preWords = new Set();
-    Array.from(paths[paths.length - 1]).forEach(x => {
-      for (let i = 0; i < dict[x].length; i += 1) {
-        const w = dict[x][i];
+    for (const x of paths[paths.length - 1]) {
+      const words = getOneDiff(x, wordList);
+      for (let i = 0; i < words.length; i += 1) {
+        const w = words[i];
         if (exists.has(w)) continue;
         preWords.add(w);
         exists.add(w);
       }
-    });
+    }
     if (preWords.size === 0) break;
     paths.push(preWords);
     if (preWords.has(beginWord)) break;
@@ -89,12 +83,13 @@ const searchPaths = (beginWord, endWord, dict) => {
 // 这个比上一个题简单了很多，只要上一个第的searchPaths 即可
 const ladderLength = (beginWord, endWord, wordList) => {
   if (wordList.indexOf(endWord) === -1) return 0;
-
-  const dict = makeDict(wordList.concat(beginWord)); // 生成一个字典，[word] => []  // 词对应的变化一个字符的单词列表
-
-  return searchPaths(beginWord, endWord, dict).length;
+  wordList.push(beginWord);
+  return searchPaths(beginWord, endWord, wordList).length;
 };
 
+console.log(
+  ladderLength("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"])
+);
 console.log(ladderLength("hot", "dog", ["hot", "dog"]));
 console.log(ladderLength("hot", "dog", ["hot", "dog", "dot"]));
 console.log(
