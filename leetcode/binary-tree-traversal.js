@@ -43,7 +43,7 @@ const traversal3 = root => {
   const fn = list.push.bind(list);
   let node = root;
   while (node || stack.length) {
-    goAlongLeftBranch(node, stack);
+    if (node) goAlongLeftBranch(node, stack);
     const vertex = stack.pop();
     fn(vertex.val);
     node = vertex.right;
