@@ -100,4 +100,5 @@ const calc = str => {
   return opnd[0];
 };
 
-console.log(calc("(1+2^3!-4)*(5!-(6-(7-(89-0!))))"));
+const str = process.argv[2] || "(1+2^3!-4)*(5!-(6-(7-(89-0!))))";
+console.log(calc(str));

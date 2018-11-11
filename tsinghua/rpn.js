@@ -67,4 +67,5 @@ const calcRPN = rpn => {
   return stack[0];
 };
 
-console.log(calcRPN("0 ! 1 + 2 3 ! 4 + ^ * 5 ! 67 - 8 9 + - -"));
+const rpn = process.argv[2] || "0 ! 1 + 2 3 ! 4 + ^ * 5 ! 67 - 8 9 + - -";
+console.log(calcRPN(rpn));
