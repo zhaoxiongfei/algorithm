@@ -54,7 +54,9 @@
     "curly": 0,
     "no-mixed-operators": 0,
     "no-restricted-syntax": 0,
-    "no-lone-blocks": 0
+    "no-lone-blocks": 0,
+    "yoda": 0,
+    "no-cond-assign": 0
   },
   "globals": {
   },
