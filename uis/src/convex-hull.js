@@ -127,6 +127,18 @@
                 <circle cx={cx} cy={cy} r="5" fill="red" />
               ))}
               {showResolve &&
+                resovles.length &&
+                resovles.map(([cx, cy]) => (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r="6"
+                    fill="none"
+                    stroke="yellow"
+                    strokeWidth="2px"
+                  />
+                ))}
+              {showResolve &&
                 resovles.length && (
                   <polygon
                     points={resovles.map(x => x.join(",")).join(" ")}
