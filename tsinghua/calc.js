@@ -67,6 +67,10 @@ const calc = str => {
   let i = 0;
   while (i < length) {
     const ch = string[i];
+    if (ch === " ") {
+      i += 1;
+      continue;
+    }
     if (isDigit(ch)) {
       let num = ch;
       while (isDigit(string[(i += 1)])) num += string[i];
