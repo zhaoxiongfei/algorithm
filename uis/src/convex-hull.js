@@ -60,12 +60,6 @@
       showResolve: false
     };
 
-    constructor() {
-      super();
-
-      this.init(this.state);
-    }
-
     addPoint = e => {
       const { points } = this.state;
       points.push([e.nativeEvent.offsetX, e.nativeEvent.offsetY]);
@@ -76,33 +70,14 @@
       const { points } = this.state;
       const resovles = findPole(points);
       this.setState({ resovles, showResolve: true });
-      console.log(resovles);
-      // this.play(resovles, plates, timeout);
     };
 
-    play(resovles, plates, timeout) {
-      const [src, dest] = resovles.shift();
-      plates[dest].push(plates[src].pop());
-
-      this.setState({ towerA: plates.A, towerB: plates.B, towerC: plates.C });
-      setTimeout(() => {
-        this.play(resovles, plates, timeout);
-      }, timeout);
-    }
-
-    init({ num }) {
-      const plates = [];
-      for (let i = 0; i < num; i += 1) plates.push(num - i);
-
-      this.setState({
-        towerA: plates,
-        towerB: [],
-        towerC: []
-      });
-    }
-
     restart() {
-      this.init(this.state);
+      this.setState({
+        resovles: [],
+        points: [],
+        showResolve: false
+      });
     }
 
     render() {
