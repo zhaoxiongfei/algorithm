@@ -33,7 +33,7 @@
     "operator-linebreak": "off",
     "prefer-destructuring": "off",
     "indent": ["error", 2],
-    "no-param-reassign": ["error", {"props": false}],
+    "no-param-reassign": "off",
     "no-continue": "off",
     "no-console": 0,
     "no-debugger": 1,
