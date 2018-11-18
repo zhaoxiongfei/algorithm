@@ -25,7 +25,7 @@
  * @param {number[]} nums
  * @return {number}
  */
-const findDuplicate = nums => {
+const findDuplicate1 = nums => {
   const { length } = nums;
   for (let i = 0; i < length; i += 1) {
     const n1 = nums[i];
@@ -37,7 +37,27 @@ const findDuplicate = nums => {
   return null;
 };
 
-console.log(findDuplicate([2, 2, 2, 2, 2]));
+const findDuplicate = nums => {
+  const { length } = nums;
+  if (length <= 1) return -1;
+  let slow = nums[0];
+  let fast = nums[nums[0]];
+  while (slow !== fast) {
+    slow = nums[slow];
+    fast = nums[nums[fast]];
+  }
+
+  fast = 0;
+  while (fast !== slow) {
+    fast = nums[fast];
+    slow = nums[slow];
+  }
+
+  return slow;
+};
+
 console.log(findDuplicate([1, 3, 4, 2, 2]));
+console.log(findDuplicate([2, 2, 2, 2, 2]));
 console.log(findDuplicate([3, 1, 3, 4, 2]));
+console.log(findDuplicate1([3, 1, 3, 4, 2]));
 console.log(findDuplicate([3, 1, 3, 4, 2, 3]));
