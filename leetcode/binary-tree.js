@@ -28,6 +28,31 @@ TreeNode.make = list => {
   return root;
 };
 
+TreeNode.toArray = root => {
+  const list = [];
+  let stack1 = [root];
+  let stack2 = [];
+  while (stack1.length) {
+    const node = stack1.shift();
+    if (node) {
+      list.push(node.val);
+      stack2.push(node.left);
+      stack2.push(node.right);
+    } else {
+      list.push(null);
+    }
+    if (!stack1.length) {
+      stack1 = stack2;
+      stack2 = [];
+    }
+  }
+  let { length } = list;
+  while (list[(length -= 1)] === null && length >= 0) {}
+  list.length = length + 1;
+
+  return list;
+};
+
 TreeNode.create = TreeNode.make;
 
 module.exports = TreeNode;
