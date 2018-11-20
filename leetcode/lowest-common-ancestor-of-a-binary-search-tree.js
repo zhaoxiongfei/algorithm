@@ -68,6 +68,7 @@ const lowestCommonAncestor = (root, p, q) => {
   const pathOfQ = [];
   DFSByPreOrder(root, p, pathOfP);
   DFSByPreOrder(root, q, pathOfQ);
+  console.log(pathOfP, pathOfQ);
   return find(pathOfQ, pathOfP);
 };
 
@@ -75,6 +76,6 @@ console.log(
   lowestCommonAncestor(
     TreeNode.create([6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]),
     2,
-    4
+    8
   )
 );
