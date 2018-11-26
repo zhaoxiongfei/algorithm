@@ -22,19 +22,22 @@
  */
 const maxEnvelopes = envelopes => {
   const { length } = envelopes;
-  envelopes.sort((a, b) => (a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]));
+  if (length === 0) return 0;
 
-  const dp = Array(length).fill(1);
+  envelopes.sort((a, b) => a[0] - b[0]);
+
+  const dp = Array(length);
+  dp[0] = 1;
   for (let i = 1; i < length; i += 1) {
-    const [w, h] = envelopes[i];
-    let max = 1;
+    dp[i] = 1;
     for (let j = 0; j < i; j += 1) {
-      const [lw, lh] = envelopes[j];
-      if (w > lw && h > lh) {
-        if (dp[j] + 1 > max) max = dp[j] + 1;
+      if (
+        envelopes[i][0] > envelopes[j][0] &&
+        envelopes[i][1] > envelopes[j][1]
+      ) {
+        if (dp[j] + 1 > dp[i]) dp[i] = dp[j] + 1;
       }
     }
-    dp[i] = max;
   }
 
   console.log(envelopes);
