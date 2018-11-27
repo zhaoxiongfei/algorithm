@@ -45,6 +45,21 @@ const integerBreak = n => {
 };
 */
 
+/**
+ * 按 e 超越数的性质来做
+ */
+const integerBreak2 = n => {
+  if (n <= 3) return n - 1;
+  let res = 1;
+  while (n > 4) {
+    res *= 3;
+    n -= 3;
+  }
+  return res * n;
+};
+
+console.log(integerBreak2(100));
+
 const ans = [
   1,
   2,
