@@ -29,7 +29,9 @@ const largestDivisibleSubset = nums => {
   for (let j = 0; j < length; j += 1) {
     const num = nums[j];
     let res = [];
-    for (let i = j - 1; i >= 0; i -= 1) {
+    const m = num >> 1;
+    for (let i = 0; i < j; i += 1) {
+      if (i > m) break;
       if (num % nums[i]) continue;
       if (dp[i] && dp[i].length > res.length) res = dp[i].slice();
     }
