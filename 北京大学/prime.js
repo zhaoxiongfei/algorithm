@@ -25,6 +25,7 @@ const calc = str => {
     if (isPrime(i)) list.push(i);
     i += 2;
   }
+  console.log(list.length);
   return list.pop();
 };
 
