@@ -31,6 +31,7 @@
  * @param {number[]} nums
  * @return {boolean}
  */
+// 0, 1 背包问题
 const canPartition = nums => {
   const total = nums.reduce((m, x) => m + x, 0);
   if (total % 2) return false;
@@ -40,6 +41,7 @@ const canPartition = nums => {
   dp[0] = 1;
   for (let i = 0; i < nums.length; i += 1) {
     for (let j = half; j >= nums[i]; j -= 1) {
+      // 是否可以刚好达到j，取决于是否存在能达到 j - nums[i] 的
       dp[j] = dp[j] || dp[j - nums[i]];
     }
   }
