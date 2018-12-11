@@ -36,6 +36,7 @@
  * @param {number} y_center
  */
 function Solution(radius, x, y) {
+  const rsquare = radius * radius;
   /**
    * @return {number[]}
    */
@@ -43,7 +44,14 @@ function Solution(radius, x, y) {
     const sin = 1 - Math.random() * 2;
     const cos = Math.sqrt(1 - sin * sin);
     const length = Math.random() * radius;
-    return [x + length * cos, y + length * sin];
+    const dx = length * cos;
+    const dy = length * sin;
+
+    if (dx * dx + dy * dy > rsquare) {
+      return "xxxxxxxxxxxx";
+    }
+
+    return [x + dx, y + dy];
   };
 
   return { randPoint };
@@ -54,7 +62,7 @@ function Solution(radius, x, y) {
  * var obj = Object.create(Solution).createNew(radius, x_center, y_center)
  * var param_1 = obj.randPoint()
  */
-const instance = new Solution(100, 0, 0);
-for (let i = 0; i < 100; i += 1) {
+const instance = new Solution(0.001, -73839.1, -3289891.3);
+for (let i = 0; i < 10000; i += 1) {
   console.log(instance.randPoint());
 }
