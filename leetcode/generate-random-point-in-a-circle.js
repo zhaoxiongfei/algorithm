@@ -40,9 +40,10 @@ function Solution(radius, x, y) {
    * @return {number[]}
    */
   const randPoint = () => {
-    const dgree = Math.random() * 2 * Math.PI;
+    const sin = 1 - Math.random() * 2;
+    const cos = Math.sqrt(1 - sin * sin);
     const length = Math.random() * radius;
-    return [x + length * Math.cos(dgree), y + length * Math.sin(dgree)];
+    return [x + length * cos, y + length * sin];
   };
 
   return { randPoint };
@@ -53,7 +54,7 @@ function Solution(radius, x, y) {
  * var obj = Object.create(Solution).createNew(radius, x_center, y_center)
  * var param_1 = obj.randPoint()
  */
-const instance = new Solution(1, 5, 5);
-for (let i = 0; i < 20; i += 1) {
+const instance = new Solution(100, 0, 0);
+for (let i = 0; i < 100; i += 1) {
   console.log(instance.randPoint());
 }
