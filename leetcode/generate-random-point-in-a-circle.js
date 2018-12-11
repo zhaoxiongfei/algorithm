@@ -36,20 +36,15 @@
  * @param {number} y_center
  */
 function Solution(radius, x, y) {
-  const rsquare = radius * radius;
+  const square = radius * radius;
   /**
    * @return {number[]}
    */
   const randPoint = () => {
-    const sin = 1 - Math.random() * 2;
-    const cos = Math.sqrt(1 - sin * sin);
-    const length = Math.random() * radius;
-    const dx = length * cos;
-    const dy = length * sin;
+    const dx = radius - radius * 2 * Math.random();
+    const dy = radius - radius * 2 * Math.random();
 
-    if (dx * dx + dy * dy > rsquare) {
-      return "xxxxxxxxxxxx";
-    }
+    if (dx * dx + dy * dy > square) return randPoint();
 
     return [x + dx, y + dy];
   };
