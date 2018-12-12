@@ -38,4 +38,16 @@ const hammingDistance = (x, y) => {
   return total;
 };
 
+const hammingDistance1 = (x, y) => {
+  let total = 0;
+  let z = x ^ y; // 保留x，y互异的位
+  while (z) {
+    if (z & 1) total += 1;
+    z >>>= 1; // 这里之所以用 >>> 是考虑负数的问题
+  }
+
+  return total;
+};
+
 console.log(hammingDistance(1, 4));
+console.log(hammingDistance1(1, 4));
