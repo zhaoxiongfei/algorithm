@@ -54,4 +54,31 @@ const fourSumCount = (A, B, C, D) => {
   return count;
 };
 
+const fourSumCount1 = (A, B, C, D) => {
+  const { length } = A;
+  if (!length) return 0;
+  const hash = new Map();
+  for (let i = 0; i < length; i += 1) {
+    for (let j = 0; j < length; j += 1) {
+      const sum = A[i] + B[j];
+      if (!hash.get(sum)) {
+        hash.set(sum, 1);
+      } else {
+        hash.set(sum, hash.get(sum) + 1);
+      }
+    }
+  }
+
+  let count = 0;
+  for (let i = 0; i < length; i += 1) {
+    for (let j = 0; j < length; j += 1) {
+      const target = 0 - C[i] - D[j];
+      if (hash.get(target)) count += hash.get(target);
+    }
+  }
+
+  return count;
+};
+
 console.log(fourSumCount([1, 2], [-2, -1], [-1, 2], [0, 2]));
+console.log(fourSumCount1([1, 2], [-2, -1], [-1, 2], [0, 2]));
