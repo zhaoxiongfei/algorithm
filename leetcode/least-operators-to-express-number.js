@@ -66,6 +66,9 @@ const leastOpsExpressTarget = (x, target) => {
     );
   }
 
+  console.log(mods);
+  console.log(left);
+  console.log(right);
   return Math.min(left[length - 1], right[length - 1] + length) - 1;
 };
 
