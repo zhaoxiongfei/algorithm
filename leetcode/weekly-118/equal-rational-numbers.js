@@ -26,7 +26,7 @@ const fraction = s => {
     m = +ff[1];
   } else {
     // 既有非循环部分，又有循环部分
-    d = +"9".repeat(ff[1].length) * 10 ** ff[0].length;
+    d = +`${"9".repeat(ff[1].length)}${"0".repeat(ff[0].length)}`;
     m = +`${ff[0]}${ff[1]}` - +ff[0];
   }
 
