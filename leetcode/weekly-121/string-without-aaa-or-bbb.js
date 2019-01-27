@@ -5,27 +5,18 @@
  */
 const strWithout3a3b = (A, B) => {
   const genStr = (ch1, ch2, n1, n2) => {
-    let str = "";
-    const p2 = [Math.ceil(n2 / 2) - 1, B - 1];
-    let p1 = n1 - p2[0];
-    console.log(p2, p1);
-    while (1 < n2 && 0 < n1) {
-      str += ch2.repeat(2);
-      if (0 < p1) {
-        str += ch1.repeat(Math.min(n1, 2));
-        p1 -= 1;
-        n1 -= Math.min(n1, 2);
-      } else {
-        str += ch1.repeat(1);
-        n1 -= 1;
-      }
-      n2 -= 2;
+    const str = [];
+    while (n1 || n2) {
+      const mayBeL1 = n1 === n2 ? 2 : 1;
+      const l2 = Math.min(n2, 2);
+      n2 -= l2;
+      str.push(ch2.repeat(l2));
+      const l1 = Math.min(n1, mayBeL1);
+      str.push(ch1.repeat(l1));
+      n1 -= l1;
     }
 
-    if (n2) str += ch2.repeat(n2);
-    if (n1) str += ch1;
-
-    return str;
+    return str.join("");
   };
 
   if (A < B) return genStr("a", "b", A, B);
@@ -33,8 +24,6 @@ const strWithout3a3b = (A, B) => {
 };
 
 console.log(strWithout3a3b(2, 5));
-/*
 console.log(strWithout3a3b(1, 1));
 console.log(strWithout3a3b(1, 2));
 console.log(strWithout3a3b(4, 1));
-*/
