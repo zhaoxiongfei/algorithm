@@ -1,6 +1,7 @@
 // https://leetcode-cn.com/problems/print-binary-tree/
 // No 655. 输出二叉树
 
+const utils = require("./utils");
 /**
  * Definition for a binary tree node.
  * function TreeNode(val) {
@@ -54,4 +55,5 @@ const printTree = root => {
 };
 
 console.log(printTree(TreeNode.create(["1", "2", "3", null, 4])));
+utils.printTree(TreeNode.create(["1", "2", "3", null, 4]));
 // console.log(printTree(TreeNode.create(["1", "2"])));
