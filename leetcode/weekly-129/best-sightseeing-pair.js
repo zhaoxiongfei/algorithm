@@ -16,6 +16,18 @@ const maxScoreSightseeingPair = A => {
   return ans;
 };
 
+const maxScoreSightseeingPair2 = A => {
+  const { length } = A;
+  let best = -Infinity;
+  let most = -Infinity;
+  for (let i = 0; i < length; i += 1) {
+    best = Math.max(best, A[i] - i + most);
+    most = Math.max(most, A[i] + i);
+  }
+
+  return best;
+};
+
 console.log(
   maxScoreSightseeingPair([
     30,
@@ -120,10 +132,8 @@ console.log(
     21
   ])
 );
-/*
-console.log(maxScoreSightseeingPair([5, 7, 4, 10, 4]));
+console.log(maxScoreSightseeingPair2([5, 7, 4, 10, 4]));
 console.log(maxScoreSightseeingPair([6, 3, 7, 4, 7, 6, 6, 4, 9]));
-console.log(maxScoreSightseeingPair([7, 2, 6, 6, 9, 4, 3]));
+console.log(maxScoreSightseeingPair2([7, 2, 6, 6, 9, 4, 3]));
 console.log(maxScoreSightseeingPair([4, 7, 5, 8]));
-console.log(maxScoreSightseeingPair([8, 1, 5, 2, 6]));
-*/
+console.log(maxScoreSightseeingPair2([8, 1, 5, 2, 6]));
