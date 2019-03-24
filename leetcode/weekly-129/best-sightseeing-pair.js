@@ -5,15 +5,15 @@
 
 const maxScoreSightseeingPair = A => {
   const { length } = A;
-  let max = -Infinity;
-  for (let i = 0; i < length; i += 1) {
-    for (let j = i + 1; j < i + 1000 && j < length; j += 1) {
-      const score = A[i] + A[j] + i - j;
-      if (max < score) max = score;
-    }
+  let curr = A[length - 1] - (length - 1);
+
+  let ans = 0;
+  for (let i = length - 2; 0 <= i; i -= 1) {
+    ans = Math.max(ans, curr + A[i] + i);
+    curr = Math.max(curr, A[i] - i);
   }
 
-  return max;
+  return ans;
 };
 
 console.log(
