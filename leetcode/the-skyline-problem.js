@@ -35,6 +35,27 @@
  * @return {number[][]}
  */
 // 思路: 数个夜晚的思索，终于想明白了。
+/**
+  1. 按照起点坐标依次处理起点(给定的数据恰好就是排序后的)
+  2. 定义两个有序向量，endings, talls 记录已处理的建筑，分别按照结束坐标降序和高度降序排列
+  3. 每处理一个建筑的起点坐标前都需要检查是否有不大于当前起点坐标的结束坐标, 从小到大一次处理，因为endings 是结束坐标降序的，所以从后往前处理即可
+    1. 每处理一个结束坐标都需要判断当前处理的结束坐标是否为高度最大(talls的第一项)
+      1. 如果是则记录一个轮廓点
+        1. 这里需要和记录里最后一条比较，
+        2. 如果x坐标相同，则保留更小的高度值
+        3. 如果x坐标不同，则插入新的坐标和高度对儿
+      2. 如果不是talls的第一项，说明有其他的建筑挡住了它，忽略即可
+    2. 处理完毕后从endings删除该项(因为endings是结束坐标降序的，因此只要修改endings的size即可)
+    3. 删除 talls 里对应的该项
+    4. 比较当前处理的建筑的高度和目前talls里的最高建筑（talls[0][2])
+      1. 如果当前的高度比talls里最高的低，则改起始点被遮挡，无须记录
+      2. 反之，如果当前的高度比talls的最高高度仍然高, 则记录一个起始类型的轮廓点
+        1. 这里依然需要合记录里最后一条做比较
+        2. 如果x坐标相同，则保留更大的高度值
+        3. 如果x坐标不相同，则插入新的坐标和高度对儿
+    5. endings, talls 分别插入当前处理的建筑(他俩分别需要维持各自的顺序)
+  4. 处理完毕后将endings里的多余的数据按照 3.1， 3.2， 3.3 的代码依次执行
+ */
 const getSkyline = buildings => {
   const { length } = buildings;
   const landline = [-Infinity, Infinity, 0];
@@ -59,19 +80,18 @@ const getSkyline = buildings => {
     for (let e = endings.length - 1; 0 <= e; e -= 1) {
       const ending = endings[e];
       const x = ending[1];
-      if (x <= item[0]) {
-        if (x < item[0] && ending === talls[0]) {
-          const y = talls[1][2];
-          const last = ans[ans.length - 1];
-          if (last && last[0] === x) {
-            last[1] = Math.min(last[1], y);
-          } else {
-            ans.push([x, y]);
-          }
+      if (item[0] < x) break;
+      if (x < item[0] && ending === talls[0]) {
+        const y = talls[1][2];
+        const last = ans[ans.length - 1];
+        if (last && last[0] === x) {
+          last[1] = Math.min(last[1], y);
+        } else {
+          ans.push([x, y]);
         }
-        talls.splice(talls.indexOf(ending), 1);
-        endings.length -= 1;
       }
+      talls.splice(talls.indexOf(ending), 1);
+      endings.length -= 1;
     }
 
     if (talls[0][2] < item[2]) {
