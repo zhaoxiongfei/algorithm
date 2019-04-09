@@ -27,4 +27,48 @@ const powerSet = list => {
   return power;
 };
 
-console.log(powerSet([1, 2, 3, 4]));
+const powerSet2 = list => {
+  const { length } = list;
+  const total = 2 ** (length - 1);
+  const power = Array(total);
+
+  for (let i = 0; i < total; i += 1) {
+    const curr = [];
+    for (let j = 0; j < length; j += 1) {
+      if (i & (1 << j)) curr.push(list[j]);
+    }
+    power.push(curr);
+  }
+
+  return power;
+};
+
+const list = [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+];
+console.time("1");
+console.log(powerSet(list).length);
+console.timeEnd("1");
+
+console.time("2");
+console.log(powerSet2(list).length);
+console.timeEnd("2");
